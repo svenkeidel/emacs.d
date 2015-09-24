@@ -95,7 +95,7 @@
 	  'rainbow-delimiters-mode)
 
 (require 'flycheck "~/flycheck/flycheck.el")
-(require 'nixos "~/.emacs.d/nixos.el")
+(require 'nixos)
 (customize-set-variable 'flycheck-command-wrapper-function
   (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args)))
 
@@ -103,7 +103,15 @@
   (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd)))
 
 (require 'haskell-mode)
+(require 'speedbar)
+(speedbar-add-supported-extension ".hs")
+(custom-set-variables
+ '(haskell-process-type 'cabal-repl)
+ '(haskell-tags-on-save t)
+ '(haskell-process-wrapper-function
+   '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args))))
 (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+(define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
 (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
 (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
 (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
@@ -112,6 +120,3 @@
 (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
 (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
 (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
-(setq haskell-process-type 'cabal-repl)
-(setq haskell-process-wrapper-function
-  '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args)))
