@@ -94,17 +94,21 @@
 (add-hook 'emacs-lisp-mode-hook
 	  'rainbow-delimiters-mode)
 
-(require 'flycheck "~/flycheck/flycheck.el")
-(require 'nixos)
-(customize-set-variable 'flycheck-command-wrapper-function
-  (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args)))
-
-(customize-set-variable 'flycheck-executable-find
-  (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd)))
-
-(require 'haskell-mode)
 (require 'speedbar)
 (speedbar-add-supported-extension ".hs")
+
+(require 'nixos)
+(custom-set-variables
+ '(nixos-channel "/home/sven/.nix-defexpr/channels/unstable/nixpkgs/"))
+
+(require 'flycheck "~/flycheck/flycheck.el")
+(custom-set-variables
+ '(flycheck-command-wrapper-function
+   (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args)))
+ '(flycheck-executable-find
+   (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
+
+(require 'haskell-mode)
 (custom-set-variables
  '(haskell-process-type 'cabal-repl)
  '(haskell-tags-on-save t)

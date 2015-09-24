@@ -11,15 +11,28 @@
 (require 'dash)
 (require 'helm)
 
+(defgroup nixos nil
+  "Utilities usefull for talking to nix-shell"
+  :prefix "nixos-")
+
+(defcustom nixos-channel nil
+  "Absolute path to a nixos channel that is used in all calls to nix-shell.
+
+e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
+  :group 'nixos
+  :type '(choice (const :tag "No channel" nil)
+                 (directory "Custome channel")))
+
 (defun nix-shell-command (sandbox &rest args)
   "Assembles a nix-shell command that gets executed in the specified sandbox."
-  (list
-   "nix-shell"
-   "-I"
-   "nixpkgs=/home/sven/.nix-defexpr/channels/unstable/nixpkgs/"
-   "--run"
-   (mapconcat 'identity args " ")
-   sandbox))
+  (append
+   (list "nix-shell")
+   (if nixos-channel
+       (list "-I"
+        (concat "nixpkgs=" nixos-channel)))
+   (list "--run")
+   (list (mapconcat 'identity args " "))
+   (list sandbox)))
 
 (defun nix-shell (sandbox &rest args)
   "Runs a nix-shell command in the given sandbox and returns its output."
@@ -82,7 +95,7 @@ to the current working directory."
 (defun nixos-haskell-doc-filter (file)
   (not (string-match "index\\|frames\\.html\\|mini_\\|\\.js\\|\\.gif\\|\\.png\\|\\.css\\|\\.txt\\|haddock\\|src" file)))
 
-(defun nixos-haskell-search-library-docs (sandbox)
+(defun nixos-haskell-search-library-doc (sandbox)
   (let* ((lib (helm :sources (helm-source-haskell-doc-library sandbox)))
          (lib-doc-dir (concat (nixos-haskell-doc-path sandbox) lib "/html/"))
          (lib-files (cddr (directory-files lib-doc-dir)))
@@ -92,8 +105,8 @@ to the current working directory."
                                   :candidates modules))))
     (concat lib-doc-dir module)))
 
-(defun nixos-haskell-open-library-docs ()
+(defun nixos-haskell-open-doc ()
   (interactive)
-  (eww (concat "file://" (nixos-haskell-search-library-docs (nixos-current-sandbox)))))
+  (eww (concat "file://" (nixos-haskell-search-library-doc (nixos-current-sandbox)))))
 
 ;;; nixos.el ends here
