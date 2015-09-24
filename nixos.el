@@ -15,24 +15,25 @@
   "Utilities usefull for talking to nix-shell"
   :prefix "nixos-")
 
-(defcustom nixos-channel nil
-  "Absolute path to a nixos channel that is used in all calls to nix-shell.
+(defcustom nixos-nixpkgs-path nil
+  "Absolute path to a nixpkgs directory.
 
+Can be customized to select a nix-channel
 e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
   :group 'nixos
   :type '(choice (const :tag "No channel" nil)
-                 (directory "Custome channel")))
+                 (directory "Custom path to a nixpkgs distribution")))
 
 (defun nix-shell-command (sandbox &rest args)
   "Assembles a nix-shell command that gets executed in the specified sandbox."
   (append
    (list "nix-shell")
-   (if nixos-channel
+   (if nixos-nixpkgs-path
        (list "-I"
-        (concat "nixpkgs=" nixos-channel)))
-   (list "--run")
-   (list (mapconcat 'identity args " "))
-   (list sandbox)))
+        (concat "nixpkgs=" nixos-nixpkgs-path)))
+   (list "--run"
+         (mapconcat 'identity args " ")
+         sandbox)))
 
 (defun nix-shell (sandbox &rest args)
   "Runs a nix-shell command in the given sandbox and returns its output."
