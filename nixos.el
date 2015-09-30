@@ -35,11 +35,16 @@ e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
          (mapconcat 'identity args " ")
          sandbox)))
 
+(defun nix-shell-string (sandbox &rest args)
+  (let ((cmd (apply 'nix-shell-command sandbox args)))
+    (mapconcat (lambda (x) (concat "'" x "'")) cmd " ")))
+
+(defun nix-compile (sandbox &rest args)
+  (compile (apply 'nix-shell-string sandbox args)))
+
 (defun nix-shell (sandbox &rest args)
   "Runs a nix-shell command in the given sandbox and returns its output."
-  (let* ((cmd (apply 'nix-shell-command sandbox args))
-	 (cmd-string (mapconcat (lambda (x) (concat "'" x "'")) cmd " ")))
-    (shell-command-to-string cmd-string)))
+  (shell-command-to-string (apply 'nix-shell-string sandbox args)))
 
 (defvar nixos-exec-path-map (make-hash-table :test 'equal
 					     :size 10))
