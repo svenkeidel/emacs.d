@@ -99,7 +99,7 @@
 
 (require 'nixos)
 (custom-set-variables
- '(nixos-nixpkgs-path "/home/sven/.nix-defexpr/channels/unstable/nixpkgs/"))
+ '(nixos-nixpkgs-path "/home/sven/.nix-defexpr/channels/unstable/"))
 
 (require 'flycheck "~/flycheck/flycheck.el")
 (custom-set-variables

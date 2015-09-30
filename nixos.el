@@ -40,6 +40,7 @@ e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
     (mapconcat (lambda (x) (concat "'" x "'")) cmd " ")))
 
 (defun nix-compile (sandbox &rest args)
+  (interactive "Dsandbox: \nMcommand: ")
   (compile (apply 'nix-shell-string sandbox args)))
 
 (defun nix-shell (sandbox &rest args)
