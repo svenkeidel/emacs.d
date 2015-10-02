@@ -1,15 +1,15 @@
 (require 'package)
 
 (setq package-list
-      '(solarized-theme
-	helm
-	smartparens
-	magit
-	buffer-move
-	rainbow-delimiters))
+      '(spacemacs-theme
+        helm
+        smartparens
+        magit
+        buffer-move
+        rainbow-delimiters))
 
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
+             '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
 (unless package-archive-contents
@@ -40,23 +40,15 @@
   (interactive)
   (find-file "~/.emacs.d/init.el"))
 
-(defun toggle-solarized-background ()
-  "toggle between solarized light and dark backround"
-  (interactive)
-  (let ((theme (car custom-enabled-themes)))
-    (load-theme
-     (cond ((eq theme 'solarized-dark)  'solarized-light)
-	   ((eq theme 'solarized-light) 'solarized-dark)))))
-
 ;; Keybindings
-(global-set-key (kbd "C-c C-i") 'open-emacs-init-el)
+(global-set-key (kbd "C-c i") 'open-emacs-init-el)
 (global-set-key (kbd "<f5>") 'recompile)
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; PLUGINS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Color theme
-(load-theme 'solarized-dark t)
+(load-theme 'spacemacs-dark t)
 (set-face-attribute 'default nil :height 140)
 
 ;; disable gui
@@ -67,7 +59,12 @@
 (setq inhibit-startup-message t)
 
 (require 'helm)
-(helm-mode)
+(require 'helm-config)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
+(global-set-key (kbd "C-x b") 'helm-mini)
+(helm-mode 1)
 
 (require 'smartparens-config)
 (sp-use-smartparens-bindings)
@@ -75,6 +72,8 @@
 (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
 
 (require 'magit)
+(global-unset-key (kbd "C-x s"))
+(global-set-key (kbd "C-x s") 'magit-status)
 
 (winner-mode 1)
 
@@ -92,29 +91,27 @@
 
 (require 'rainbow-delimiters)
 (add-hook 'emacs-lisp-mode-hook
-	  'rainbow-delimiters-mode)
+          'rainbow-delimiters-mode)
 
 (require 'speedbar)
 (speedbar-add-supported-extension ".hs")
 
 (require 'nixos)
-(custom-set-variables
- '(nixos-nixpkgs-path "/home/sven/.nix-defexpr/channels/unstable/"))
+(setq nixos-nixpkgs-path "/home/sven/.nix-defexpr/channels/unstable/")
 
 (require 'flycheck "~/flycheck/flycheck.el")
-(custom-set-variables
- '(flycheck-command-wrapper-function
-   (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args)))
- '(flycheck-executable-find
-   (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
+(setq flycheck-command-wrapper-function
+        (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args))
+      flycheck-executable-find
+        (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd)))
 
 (require 'haskell-mode)
-(custom-set-variables
- '(haskell-process-type 'cabal-repl)
- '(haskell-tags-on-save t)
- '(haskell-process-wrapper-function
-   '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args))))
+(setq haskell-process-type 'cabal-repl
+      haskell-tags-on-save t
+      haskell-process-wrapper-function
+        '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args)))
 (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
 (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
 (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
 (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
