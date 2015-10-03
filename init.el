@@ -6,7 +6,10 @@
         smartparens
         magit
         buffer-move
-        rainbow-delimiters))
+        rainbow-delimiters
+        haskell-mode
+        company
+        w3m))
 
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/"))
@@ -44,12 +47,12 @@
 (global-set-key (kbd "C-c i") 'open-emacs-init-el)
 (global-set-key (kbd "<f5>") 'recompile)
 
-
+(setq browse-url-browser-function 'w3m-browse-url)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; PLUGINS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Color theme
 (load-theme 'spacemacs-dark t)
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 120)
 
 ;; disable gui
 (menu-bar-mode -1)
@@ -60,6 +63,7 @@
 
 (require 'helm)
 (require 'helm-config)
+(setq helm-move-to-line-cycle-in-source t)
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
@@ -68,7 +72,7 @@
 
 (require 'smartparens-config)
 (sp-use-smartparens-bindings)
-(smartparens-global-mode 1)
+(smartparens-global-strict-mode 1)
 (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
 
 (require 'magit)
@@ -97,7 +101,8 @@
 (speedbar-add-supported-extension ".hs")
 
 (require 'nixos)
-(setq nixos-nixpkgs-path "/home/sven/.nix-defexpr/channels/unstable/")
+(setq nixos-nixpkgs-path nil)
+;; (setq nixos-nixpkgs-path "/home/sven/.nix-defexpr/channels/unstable/")
 
 (require 'flycheck "~/flycheck/flycheck.el")
 (setq flycheck-command-wrapper-function

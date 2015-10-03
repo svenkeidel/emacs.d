@@ -48,15 +48,15 @@ e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
   (shell-command-to-string (apply 'nix-shell-string sandbox args)))
 
 (defvar nixos-exec-path-map (make-hash-table :test 'equal
-					     :size 10))
+                                             :size 10))
 
 (defun nixos-exec-path (sandbox)
   "Returns the `exec-path' of the given sandbox."
   (if (gethash sandbox nixos-exec-path-map)
       (gethash sandbox nixos-exec-path-map)
     (puthash sandbox
-	     (split-string (nix-shell sandbox "echo" "$PATH") ":")
-	     nixos-exec-path-map)))
+             (split-string (nix-shell sandbox "echo" "$PATH") ":")
+             nixos-exec-path-map)))
 
 (defun nixos-executable-find (sandbox exe)
   "Searches for an executable in the given sandbox"
@@ -68,7 +68,7 @@ e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
 looking upwards."
   (map-nil 'expand-file-name
    (locate-dominating-file path
-			   '(lambda (dir) (directory-files dir t ".*\.nix$")))))
+                           '(lambda (dir) (directory-files dir t ".*\.nix$")))))
 
 (defun map-nil (f x)
   (if x
@@ -83,37 +83,58 @@ to the current working directory."
 (defvar nixos-haskell-doc-path-map (make-hash-table :test 'equal
                                                 :size 10))
 
-(defun nixos-haskell-doc-path (sandbox)
-  "Returns the `exec-path' of the given sandbox."
+(defun nixos-haskell-doc-paths (sandbox)
+  "Returns a list of paths that contain haddock documentation."
   (if (gethash sandbox nixos-haskell-doc-path-map)
       (gethash sandbox nixos-haskell-doc-path-map)
     (puthash sandbox
-             (nix-shell sandbox "echo" "-n" "$NIX_GHC_LIBDOCDIR")
-	     nixos-haskell-doc-path-map)))
+             (list
+              (nix-shell sandbox "echo -n $NIX_GHC_DOCDIR/libraries/")
+              (concat (car (split-string (nix-shell sandbox "realpath $(dirname $NIX_GHC)/../share/doc/x86*/")))
+                      "/"))
+             nixos-haskell-doc-path-map)))
 
-(defun helm-source-haskell-doc-library (sandbox)
+(defun nixos-filter-doc-dir (dir)
+  (cddr
+   (-map (lambda (f) (car f))
+         (-filter (lambda (f) (cadr f))
+                  (directory-files-and-attributes dir t)))))
+
+(defun nixos-haskell-docs (sandbox)
+  (apply 'append (-map 'nixos-filter-doc-dir (nixos-haskell-doc-paths sandbox))))
+
+(defun helm-source-haskell-doc (sandbox)
   (helm-build-sync-source "haskell-doc-library"
-    :candidates (cddr (directory-files (nixos-haskell-doc-path sandbox)))))
+    :candidates (-map (lambda (f) (cons (file-name-nondirectory f) f))
+                      (nixos-haskell-docs sandbox))))
+
+(defun nixos-haskell-doc-filter (files)
+  (-filter
+   (lambda (file)
+    (not (string-match "index\\|frames\\.html\\|mini_\\|\\.js\\|\\.gif\\|\\.png\\|\\.css\\|\\.txt\\|haddock\\|src" file)))
+   files))
 
 (defun nixos-convert-module-file-name (module-file)
-  `( ,(mapconcat 'identity (split-string module-file "-" nil "\.html") ".")
-   . ,module-file))
+  (let ((filename (file-name-nondirectory module-file)))
+    (cons (mapconcat 'identity (split-string filename "-" nil "\.html") ".")
+          module-file)))
 
-(defun nixos-haskell-doc-filter (file)
-  (not (string-match "index\\|frames\\.html\\|mini_\\|\\.js\\|\\.gif\\|\\.png\\|\\.css\\|\\.txt\\|haddock\\|src" file)))
-
-(defun nixos-haskell-search-library-doc (sandbox)
-  (let* ((lib (helm :sources (helm-source-haskell-doc-library sandbox)))
-         (lib-doc-dir (concat (nixos-haskell-doc-path sandbox) lib "/html/"))
-         (lib-files (cddr (directory-files lib-doc-dir)))
-         (module-files (-filter 'nixos-haskell-doc-filter lib-files))
+(defun nixos-haskell-search-doc (sandbox)
+  (let* ((lib (helm :sources (helm-source-haskell-doc sandbox)))
+         (doc-files (cddr (directory-files lib t)))
+         (module-files (nixos-haskell-doc-filter doc-files))
          (modules (-map 'nixos-convert-module-file-name module-files))
          (module (helm :sources (helm-build-sync-source "haskell-library-module"
                                   :candidates modules))))
-    (concat lib-doc-dir module)))
+    module))
 
 (defun nixos-haskell-open-doc ()
   (interactive)
-  (eww (concat "file://" (nixos-haskell-search-library-doc (nixos-current-sandbox)))))
+  (browse-url (concat "file://" (nixos-haskell-search-doc (nixos-current-sandbox)))))
+
+(defun nixos-clear-caches ()
+  (interactive)
+  (clrhash nixos-exec-path-map)
+  (clrhash nixos-haskell-doc-path-map))
 
 ;;; nixos.el ends here
