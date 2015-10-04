@@ -70,10 +70,12 @@
 (global-set-key (kbd "C-x b") 'helm-mini)
 (helm-mode 1)
 
+(require 'smartparens)
 (require 'smartparens-config)
 (sp-use-smartparens-bindings)
-(smartparens-global-strict-mode 1)
 (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+(add-hook 'emacs-lisp-mode-hook
+          'smartparens-strict-mode)
 
 (require 'magit)
 (global-unset-key (kbd "C-x s"))
@@ -115,7 +117,6 @@
       haskell-tags-on-save t
       haskell-process-wrapper-function
         '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args)))
-(add-hook 'haskell-mode-hook 'haskell-indentation-mode)
 (add-hook 'haskell-mode-hook 'flycheck-mode)
 (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
 (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
@@ -126,3 +127,11 @@
 (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
 (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
 (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
+
+(add-to-list 'load-path "/home/sven/structured-haskell-mode/elisp/")
+(require 'shm)
+(setq shm-program-name "/home/sven/structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode")
+(add-hook 'haskell-mode 'structured-haskell-mode)
+
+(require 'shm-case-split)
+(define-key shm-map (kbd "C-c C-s") 'shm/case-split)
