@@ -1,14 +1,15 @@
 (require 'package)
 
 (setq package-list
-      '(spacemacs-theme
-        helm
-        smartparens
-        magit
+      '(avy
         buffer-move
-        rainbow-delimiters
-        haskell-mode
         company
+        haskell-mode
+        helm
+        magit
+        rainbow-delimiters
+        smartparens
+        spacemacs-theme
         w3m))
 
 (add-to-list 'package-archives
@@ -128,10 +129,14 @@
 (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
 (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
 
-(add-to-list 'load-path "/home/sven/structured-haskell-mode/elisp/")
+(add-to-list 'load-path "/home/sven/.emacs.d/structured-haskell-mode/elisp/")
 (require 'shm)
-(setq shm-program-name "/home/sven/structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode")
-(add-hook 'haskell-mode 'structured-haskell-mode)
+(setq shm-program-name "/home/sven/.emacs.d/structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode")
+(add-hook 'haskell-mode-hook 'structured-haskell-mode)
 
 (require 'shm-case-split)
 (define-key shm-map (kbd "C-c C-s") 'shm/case-split)
+
+(require 'avy)
+(global-set-key (kbd "C-;") 'avy-goto-char)
+(global-set-key (kbd "C-:") 'avy-goto-char-2)
