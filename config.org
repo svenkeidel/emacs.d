@@ -46,51 +46,13 @@
 #+end_src
 
 * Plugins
-** W3M
-#+begin_src emacs-lisp
-(use-package w3m
-  :commands (w3m-browse-url)
-  :init (setq browse-url-browser-function 'w3m-browse-url))
-#+end_src
 
-** Helm
-#+begin_src emacs-lisp
-(use-package helm
-  :demand t
-  :diminish helm-mode
-  :init
-    (setq helm-move-to-line-cycle-in-source t)
+** Avy
+#+bepgin_src emacs-lisp
+(use-package avy
   :bind
-    ("M-x"   . helm-M-x)
-    ("C-c h" . helm-command-prefix)
-    ("C-x b" . helm-mini)
-  :config
-    (require 'helm-config)
-    (helm-mode 1))
-#+end_src
-
-** Smart Parens
-#+begin_src emacs-lisp
-(use-package smartparens
-  :diminish smartparens-mode
-  :config
-    (require 'smartparens-config)
-    (sp-use-smartparens-bindings)
-    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-    (add-hook 'emacs-lisp-mode-hook
-              'smartparens-strict-mode))
-#+end_src
-
-** Magit
-#+begin_src emacs-lisp
-(use-package magit
-  :bind
-    ("C-x s" . magit-status))
-#+end_src
-
-** Winner Mode
-#+begin_src emacs-lisp
-(winner-mode 1)
+    ("C-;" . avy-goto-char)
+    ("C-:" . avy-goto-char-2))
 #+end_src
 
 ** Buffer Move
@@ -105,49 +67,20 @@
       (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
 #+end_src
 
-** Whitespace Config
+** EasyPG
 #+begin_src emacs-lisp
-(use-package whitespace
-  :ensure t
-  :diminish global-whitespace-mode
+(use-package epa
   :init
-    (progn
-      (setq whitespace-line-column 80)
-      (setq whitespace-style '(face empty tabs lines-tail trailing))
-      (setq-default indent-tabs-mode nil))
-  :config
-    (global-whitespace-mode 1))
-#+end_src
-
-** Rainbow delimiter
-#+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :ensure t
-  :diminish rainbow-delimiters-mode
-  :init
-    (add-hook 'emacs-lisp-mode-hook
-              'rainbow-delimiters-mode))
-#+end_src
-
-** Speedbar
-#+begin_src emacs-lisp
-(require 'speedbar)
-(speedbar-add-supported-extension ".hs")
-#+end_src
-
-** NixOS
-#+begin_src emacs-lisp
-(use-package nixos
-  :init
-    (setq nixos-nixpkgs-path nil))
+    (require 'epa-file)
+    (epa-file-enable))
 #+end_src
 
 ** Flycheck
 
 #+begin_src emacs-lisp
 (use-package flycheck
+  :ensure nil
   :defer t
-  :load-path "~/flycheck/flycheck.el"
   :pin manual
   :init
     (setq flycheck-command-wrapper-function
@@ -156,7 +89,8 @@
             (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
 #+end_src
 
-** Haskell mode
+** Haskell
+*** Haskell Mode
 #+begin_src emacs-lisp
 (use-package haskell-mode
   :ensure t
@@ -178,9 +112,9 @@
     (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space))
 #+end_src
 
-** Structured Haskell Mode
+*** Structured Haskell Mode
 #+begin_src emacs-lisp
-n(use-package shm
+(use-package shm
   :load-path "structured-haskell-mode/elisp/"
   :diminish structured-haskell-mode
   :bind ("C-c C-s" . shm/case-split)
@@ -191,10 +125,99 @@ n(use-package shm
     (add-hook 'haskell-mode-hook 'structured-haskell-mode))
 #+end_src
 
-** Avy
+** Helm
 #+begin_src emacs-lisp
-(use-package avy
+(use-package helm
+  :demand t
+  :diminish helm-mode
+  :init
+    (setq helm-move-to-line-cycle-in-source t)
   :bind
-    ("C-;" . avy-goto-char)
-    ("C-:" . avy-goto-char-2))
+    ("M-x"   . helm-M-x)
+    ("C-c h" . helm-command-prefix)
+    ("C-x b" . helm-mini)
+  :config
+    (require 'helm-config)
+    (helm-mode 1))
 #+end_src
+
+** Magit
+#+begin_src emacs-lisp
+(use-package magit
+  :bind
+    ("C-x s" . magit-status))
+#+end_src
+
+** NixOS
+#+begin_src emacs-lisp
+(use-package nix-mode)
+
+(use-package nixos
+  :init
+    (setq nixos-nixpkgs-path nil))
+#+end_src
+
+** Rainbow delimiter
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :diminish rainbow-delimiters-mode
+  :init
+    (add-hook 'emacs-lisp-mode-hook
+              'rainbow-delimiters-mode))
+#+end_src
+
+** Smart Parens
+#+begin_src emacs-lisp
+(use-package smartparens
+  :diminish smartparens-mode
+  :config
+    (require 'smartparens-config)
+    (sp-use-smartparens-bindings)
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (add-hook 'emacs-lisp-mode-hook
+              'smartparens-strict-mode))
+#+end_src
+
+** Speedbar
+#+begin_src emacs-lisp
+(require 'speedbar)
+(speedbar-add-supported-extension ".hs")
+#+end_src
+
+** Twittering Mode
+#+begin_src emacs-lisp
+(use-package twittering-mode
+  :init
+    (advice-add 'twittering-capable-of-encryption-p
+      :around (lambda (fun &rest args) t))
+    (setq twittering-use-master-password t
+          twittering-username "svenkeidel@gmail.com"))
+#+end_src
+
+** W3M
+#+begin_src emacs-lisp
+(use-package w3m
+  :commands (w3m-browse-url)
+  :init (setq browse-url-browser-function 'w3m-browse-url))
+#+end_src
+
+** Winner Mode
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
+
+** Whitespace Config
+#+begin_src emacs-lisp
+(use-package whitespace
+  :ensure t
+  :diminish global-whitespace-mode
+  :init
+    (progn
+      (setq whitespace-line-column 80)
+      (setq whitespace-style '(face empty tabs lines-tail trailing))
+      (setq-default indent-tabs-mode nil))
+  :config
+    (global-whitespace-mode 1))
+#+end_src
+
