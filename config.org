@@ -57,6 +57,7 @@
 #+begin_src emacs-lisp
 (use-package helm
   :demand t
+  :diminish helm-mode
   :init
     (setq helm-move-to-line-cycle-in-source t)
   :bind
@@ -71,6 +72,7 @@
 ** Smart Parens
 #+begin_src emacs-lisp
 (use-package smartparens
+  :diminish smartparens-mode
   :config
     (require 'smartparens-config)
     (sp-use-smartparens-bindings)
@@ -107,6 +109,7 @@
 #+begin_src emacs-lisp
 (use-package whitespace
   :ensure t
+  :diminish global-whitespace-mode
   :init
     (progn
       (setq whitespace-line-column 80)
@@ -120,10 +123,10 @@
 #+begin_src emacs-lisp
 (use-package rainbow-delimiters
   :ensure t
+  :diminish rainbow-delimiters-mode
   :init
-    (progn
-      (add-hook 'emacs-lisp-mode-hook
-                'rainbow-delimiters-mode)))
+    (add-hook 'emacs-lisp-mode-hook
+              'rainbow-delimiters-mode))
 #+end_src
 
 ** Speedbar
@@ -177,8 +180,9 @@
 
 ** Structured Haskell Mode
 #+begin_src emacs-lisp
-(use-package shm
+n(use-package shm
   :load-path "structured-haskell-mode/elisp/"
+  :diminish structured-haskell-mode
   :bind ("C-c C-s" . shm/case-split)
   :init
     (setq shm-program-name
