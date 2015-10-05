@@ -1,0 +1,196 @@
+* Use-Package
+#+begin_src emacs-lisp
+(setq use-package-always-ensure t)
+#+end_src
+
+* Custom Functions
+#+begin_src emacs-lisp
+(defun insert-line-above (times)
+  "Insert a newline above the line containing the cursor."
+  (interactive "p")
+  (save-excursion
+    (move-beginning-of-line 1)
+    (newline times)))
+
+(defun join-line-below (times)
+  "joins the next line into the line containing the cursor."
+  (interactive "p")
+  (save-excursion
+    (next-line times)
+    (dotimes (x times)
+      (join-line))))
+
+(defun open-emacs-init-el ()
+  "open the .emacs.d/init.el configuration file"
+  (interactive)
+  (find-file (concat user-emacs-directory "config.org")))
+#+end_src
+
+* Keybindings
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c i") 'open-emacs-init-el)
+(global-set-key (kbd "<f5>") 'recompile)
+#+end_src
+
+* Apperance
+#+begin_src emacs-lisp
+(use-package spacemacs-theme
+  :init
+    (load-theme 'spacemacs-dark t))
+
+(use-package org
+  :init
+    (setq org-src-fontify-natively t))
+
+(set-face-attribute 'default nil :height 120)
+#+end_src
+
+* Plugins
+** W3M
+#+begin_src emacs-lisp
+(use-package w3m
+  :commands (w3m-browse-url)
+  :init (setq browse-url-browser-function 'w3m-browse-url))
+#+end_src
+
+** Helm
+#+begin_src emacs-lisp
+(use-package helm
+  :demand t
+  :init
+    (setq helm-move-to-line-cycle-in-source t)
+  :bind
+    ("M-x"   . helm-M-x)
+    ("C-c h" . helm-command-prefix)
+    ("C-x b" . helm-mini)
+  :config
+    (require 'helm-config)
+    (helm-mode 1))
+#+end_src
+
+** Smart Parens
+#+begin_src emacs-lisp
+(use-package smartparens
+  :config
+    (require 'smartparens-config)
+    (sp-use-smartparens-bindings)
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (add-hook 'emacs-lisp-mode-hook
+              'smartparens-strict-mode))
+#+end_src
+
+** Magit
+#+begin_src emacs-lisp
+(use-package magit
+  :bind
+    ("C-x s" . magit-status))
+#+end_src
+
+** Winner Mode
+#+begin_src emacs-lisp
+(winner-mode 1)
+#+end_src
+
+** Buffer Move
+#+begin_src emacs-lisp
+(use-package buffer-move
+  :ensure t
+  :init
+    (progn
+      (global-set-key (kbd "<C-S-up>") 'buf-move-up)
+      (global-set-key (kbd "<C-S-down>") 'buf-move-down)
+      (global-set-key (kbd "<C-S-left>") 'buf-move-left)
+      (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
+#+end_src
+
+** Whitespace Config
+#+begin_src emacs-lisp
+(use-package whitespace
+  :ensure t
+  :init
+    (progn
+      (setq whitespace-line-column 80)
+      (setq whitespace-style '(face empty tabs lines-tail trailing))
+      (setq-default indent-tabs-mode nil))
+  :config
+    (global-whitespace-mode 1))
+#+end_src
+
+** Rainbow delimiter
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :init
+    (progn
+      (add-hook 'emacs-lisp-mode-hook
+                'rainbow-delimiters-mode)))
+#+end_src
+
+** Speedbar
+#+begin_src emacs-lisp
+(require 'speedbar)
+(speedbar-add-supported-extension ".hs")
+#+end_src
+
+** NixOS
+#+begin_src emacs-lisp
+(use-package nixos
+  :init
+    (setq nixos-nixpkgs-path nil))
+#+end_src
+
+** Flycheck
+
+#+begin_src emacs-lisp
+(use-package flycheck
+  :defer t
+  :load-path "~/flycheck/flycheck.el"
+  :pin manual
+  :init
+    (setq flycheck-command-wrapper-function
+            (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args))
+          flycheck-executable-find
+            (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
+#+end_src
+
+** Haskell mode
+#+begin_src emacs-lisp
+(use-package haskell-mode
+  :ensure t
+  :init
+    (setq haskell-process-type 'cabal-repl
+          haskell-tags-on-save t
+          haskell-process-wrapper-function
+            '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args)))
+    (add-hook 'haskell-mode-hook 'flycheck-mode)
+  :config
+    (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
+    (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+    (define-key haskell-mode-map (kbd "C-`") 'haskell-interactive-bring)
+    (define-key haskell-mode-map (kbd "C-c C-t") 'haskell-process-do-type)
+    (define-key haskell-mode-map (kbd "C-c C-i") 'haskell-process-do-info)
+    (define-key haskell-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
+    (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
+    (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
+    (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space))
+#+end_src
+
+** Structured Haskell Mode
+#+begin_src emacs-lisp
+(use-package shm
+  :load-path "structured-haskell-mode/elisp/"
+  :bind ("C-c C-s" . shm/case-split)
+  :init
+    (setq shm-program-name
+          (concat user-emacs-directory
+                  "structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode"))
+    (add-hook 'haskell-mode-hook 'structured-haskell-mode))
+#+end_src
+
+** Avy
+#+begin_src emacs-lisp
+(use-package avy
+  :bind
+    ("C-;" . avy-goto-char)
+    ("C-:" . avy-goto-char-2))
+#+end_src

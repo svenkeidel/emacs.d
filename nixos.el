@@ -7,13 +7,13 @@
 
 ;;; Code:
 
-(provide 'nixos)
 (require 'dash)
 (require 'helm)
 
 (defgroup nixos nil
   "Utilities usefull for talking to nix-shell"
-  :prefix "nixos-")
+  :prefix "nixos-"
+  :group nil)
 
 (defcustom nixos-nixpkgs-path nil
   "Absolute path to a nixpkgs directory.
@@ -35,9 +35,11 @@ e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
          (mapconcat 'identity args " ")
          sandbox)))
 
+
 (defun nix-shell-string (sandbox &rest args)
   (let ((cmd (apply 'nix-shell-command sandbox args)))
     (mapconcat (lambda (x) (concat "'" x "'")) cmd " ")))
+
 
 (defun nix-compile (sandbox &rest args)
   (interactive "Dsandbox: \nMcommand: ")
@@ -136,5 +138,7 @@ to the current working directory."
   (interactive)
   (clrhash nixos-exec-path-map)
   (clrhash nixos-haskell-doc-path-map))
+
+(provide 'nixos)
 
 ;;; nixos.el ends here
