@@ -45,7 +45,7 @@
 (set-face-attribute 'default nil :height 120)
 #+end_src
 
-* Plugins
+* Packages
 
 ** Avy
 #+bepgin_src emacs-lisp
@@ -58,13 +58,11 @@
 ** Buffer Move
 #+begin_src emacs-lisp
 (use-package buffer-move
-  :ensure t
-  :init
-    (progn
-      (global-set-key (kbd "<C-S-up>") 'buf-move-up)
-      (global-set-key (kbd "<C-S-down>") 'buf-move-down)
-      (global-set-key (kbd "<C-S-left>") 'buf-move-left)
-      (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
+  :bind
+    ("<C-S-up>"    . buf-move-up)
+    ("<C-S-down>"  . buf-move-down)
+    ("<C-S-left>"  . buf-move-left)
+    ("<C-S-right>" . buf-move-right))
 #+end_src
 
 ** EasyPG
@@ -141,6 +139,13 @@
     (helm-mode 1))
 #+end_src
 
+** Info
+#+begin_src emacs-lisp
+(use-package info
+  :config
+    (add-to-list 'Info-directory-list "/home/sven/.nix-profile/share/info/"))
+#+end_src
+
 ** Magit
 #+begin_src emacs-lisp
 (use-package magit
@@ -155,6 +160,24 @@
 (use-package nixos
   :init
     (setq nixos-nixpkgs-path nil))
+#+end_src
+
+** Org Mode
+Keybindings that I cannot remember. Hopefully this list
+gets shorter over time.
+
+S-TAB          Global Cycling
+C-u C-u TAB    Startup visibility
+C-c C-n        Next Heading
+C-c C-p        Previouse Heading
+
+#+begin_src emacs-lisp
+(use-package org
+  :bind
+    ("C-c l" . org-store-link)
+    ("C-c a" . org-agenda)
+    ("C-c c" . org-capture)
+    ("C-c b" . org-iswitchb))
 #+end_src
 
 ** Rainbow delimiter
@@ -220,4 +243,3 @@
   :config
     (global-whitespace-mode 1))
 #+end_src
-
