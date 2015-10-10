@@ -42,7 +42,7 @@
   :init
     (setq org-src-fontify-natively t))
 
-(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 150)
 #+end_src
 
 * Packages
@@ -98,6 +98,8 @@
           haskell-process-wrapper-function
             '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args)))
     (add-hook 'haskell-mode-hook 'flycheck-mode)
+    (add-hook 'haskell-mode-hook 'smartparens-strict-mode)
+    (add-hook 'haskell-mode-hook 'haskell-indent-mode)
   :config
     (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
@@ -113,6 +115,7 @@
 *** Structured Haskell Mode
 #+begin_src emacs-lisp
 (use-package shm
+  :disabled t
   :load-path "structured-haskell-mode/elisp/"
   :diminish structured-haskell-mode
   :bind ("C-c C-s" . shm/case-split)
@@ -170,6 +173,14 @@ S-TAB          Global Cycling
 C-u C-u TAB    Startup visibility
 C-c C-n        Next Heading
 C-c C-p        Previouse Heading
+C-RET          Insert Heading
+M-S-RET        Insert TODO
+M-left         Demote Heading
+M-right        Promote Heading
+M-S-left       Demote Subtree
+M-S-right      Promote Subtree
+M-h            Mark element
+C-c ^          Sort
 
 #+begin_src emacs-lisp
 (use-package org
