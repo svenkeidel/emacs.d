@@ -1,0 +1,3 @@
+[submodule "helm-hayoo"]
+	path = helm-hayoo
+	url = github:svenkeidel/helm-hayoo.git

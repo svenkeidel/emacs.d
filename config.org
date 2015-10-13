@@ -65,6 +65,14 @@
     ("<C-S-right>" . buf-move-right))
 #+end_src
 
+** Compilation
+#+begin_src emacs-lisp
+(use-package compile
+  :init
+    (setq compilation-scroll-output t)
+    (add-hook 'compilation-mode-hook 'toggle-truncate-lines))
+#+end_src
+
 ** EasyPG
 #+begin_src emacs-lisp
 (use-package epa
@@ -85,6 +93,15 @@
             (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args))
           flycheck-executable-find
             (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
+#+end_src
+
+** Flyspell
+
+#+begin_src emacs-lisp
+(use-package flyspell
+  :init
+    (setq ispell-program-name "/home/sven/.nix-profile/bin/aspell")
+    (setenv "ASPELL_CONF" "dict-dir /home/sven/.nix-profile/lib/aspell"))
 #+end_src
 
 ** Haskell
@@ -110,6 +127,10 @@
     (define-key haskell-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
     (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
     (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space))
+
+(use-package helm-hayoo
+  :config
+    (define-key haskell-mode-map (kbd "C-c y") 'helm-hayoo))
 #+end_src
 
 *** Structured Haskell Mode
@@ -147,6 +168,16 @@
 (use-package info
   :config
     (add-to-list 'Info-directory-list "/home/sven/.nix-profile/share/info/"))
+#+end_src
+
+** LaTeX Mode
+#+begin_src emacs-lisp
+(use-package tex-mode
+  :init
+    (add-hook 'latex-mode-hook 'flycheck-mode)
+    (add-hook 'latex-mode-hook 'flyspell-mode)
+    (add-hook 'latex-mode-hook 'prettify-symbols-mode)
+    (add-hook 'latex-mode-hook 'turn-on-reftex))
 #+end_src
 
 ** Magit
@@ -189,6 +220,12 @@ C-c ^          Sort
     ("C-c a" . org-agenda)
     ("C-c c" . org-capture)
     ("C-c b" . org-iswitchb))
+#+end_src
+
+** Prettify Symbols
+#+begin_src emacs-lisp
+(use-package prog-mode
+  :diminish prettify-symbols-mode)
 #+end_src
 
 ** Rainbow delimiter
