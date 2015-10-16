@@ -13,8 +13,8 @@
 ;; Shutup warning message
 (setq ad-redefinition-action 'accept)
 
-(setq inhibit-startup-message nil)
-(setq initial-scratch-message nil)
+(setq inhibit-startup-message t)
+(setq initial-scratch-message "")
 
 ;;; Set up package
 (require 'package)

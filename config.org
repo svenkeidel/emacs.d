@@ -132,7 +132,6 @@
   :require helm-config
   :diminish helm-mode
   :init
-    (setq initial-buffer-choice #'helm-recentf)
     (setq helm-move-to-line-cycle-in-source t)
   :bind
     ("M-x"   . helm-M-x)
@@ -230,11 +229,18 @@
 ** Org Mode
 #+begin_src emacs-lisp
 (req-package org
+  :init
+    (setq org-src-preserve-indentation t)
   :bind
     ("C-c l" . org-store-link)
     ("C-c a" . org-agenda)
     ("C-c c" . org-capture)
     ("C-c b" . org-iswitchb))
+#+end_src
+
+** Projectile
+#+begin_src emacs-lisp
+  (req-package projectile)
 #+end_src
 
 ** Rainbow delimiter
@@ -248,11 +254,15 @@
 
 ** Smart Parens
 #+begin_src emacs-lisp
-(req-package smartparens-config)
 (req-package smartparens
-  :require smartparens-config
   :config
-    (sp-use-smartparens-bindings))
+    (define-key sp-keymap (kbd "C-<right>") 'sp-forward-slurp-sexp)
+    (define-key sp-keymap (kbd "C-<left>") 'sp-forward-barf-sexp)
+    (define-key sp-keymap (kbd "C-M-<left>") 'sp-backward-slurp-sexp)
+    (define-key sp-keymap (kbd "C-M-<right>") 'sp-backward-barf-sexp)
+    (define-key sp-keymap (kbd "C-<right_bracket>") 'sp-select-next-thing-exchange)
+    (define-key sp-keymap (kbd "C-<left_bracket>") 'sp-select-previous-thing)
+    (define-key sp-keymap (kbd "C-M-<right_bracket>") 'sp-select-next-thing))
 #+end_src
 
 ** Speedbar
