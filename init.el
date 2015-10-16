@@ -10,8 +10,11 @@
   (tooltip-mode -1)
   (blink-cursor-mode 0))
 
-(setq inhibit-startup-message t)
-(setq initial-scratch-message "")
+;; Shutup warning message
+(setq ad-redefinition-action 'accept)
+
+(setq inhibit-startup-message nil)
+(setq initial-scratch-message nil)
 
 ;;; Set up package
 (require 'package)
@@ -19,10 +22,14 @@
              '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+(dolist
+  (package '(use-package req-package))
+  (unless (package-installed-p package)
+    (package-refresh-contents)
+    (package-install package)))
 
-(defvar use-package-verbose t)
 (require 'use-package)
+(require 'req-package)
+
 (org-babel-load-file (concat user-emacs-directory "config.org"))
+(req-package-finish)

@@ -1,8 +1,3 @@
-* Use-Package
-#+begin_src emacs-lisp
-(setq use-package-always-ensure t)
-#+end_src
-
 * Custom Functions
 #+begin_src emacs-lisp
 (defun insert-line-above (times)
@@ -48,8 +43,8 @@
 * Packages
 
 ** Avy
-#+bepgin_src emacs-lisp
-(use-package avy
+#+begin_src emacs-lisp
+(req-package avy
   :bind
     ("C-;" . avy-goto-char)
     ("C-:" . avy-goto-char-2))
@@ -57,7 +52,7 @@
 
 ** Buffer Move
 #+begin_src emacs-lisp
-(use-package buffer-move
+(req-package buffer-move
   :bind
     ("<C-S-up>"    . buf-move-up)
     ("<C-S-down>"  . buf-move-down)
@@ -67,7 +62,7 @@
 
 ** Compilation
 #+begin_src emacs-lisp
-(use-package compile
+(req-package compile
   :init
     (setq compilation-scroll-output t)
     (add-hook 'compilation-mode-hook 'toggle-truncate-lines))
@@ -75,19 +70,16 @@
 
 ** EasyPG
 #+begin_src emacs-lisp
-(use-package epa
-  :init
-    (require 'epa-file)
-    (epa-file-enable))
+(req-package epa-file)
+(req-package epa
+  :require epa-file)
 #+end_src
 
 ** Flycheck
 
 #+begin_src emacs-lisp
-(use-package flycheck
-  :ensure nil
-  :defer t
-  :pin manual
+(req-package flycheck
+  :require nixos
   :init
     (setq flycheck-command-wrapper-function
             (lambda (command) (apply 'nix-shell-command (nixos-current-sandbox) command))
@@ -98,17 +90,16 @@
 ** Flyspell
 
 #+begin_src emacs-lisp
-(use-package flyspell
+(req-package flyspell
   :init
     (setq ispell-program-name "/home/sven/.nix-profile/bin/aspell")
     (setenv "ASPELL_CONF" "dict-dir /home/sven/.nix-profile/lib/aspell"))
 #+end_src
 
 ** Haskell
-*** Haskell Mode
 #+begin_src emacs-lisp
-(use-package haskell-mode
-  :ensure t
+(req-package haskell-mode
+  :require flycheck smartparens nixos
   :init
     (setq haskell-process-type 'cabal-repl
           haskell-tags-on-save t
@@ -128,138 +119,117 @@
     (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
     (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space))
 
-(use-package helm-hayoo
+(req-package helm-hayoo
+  :require haskell-mode
   :config
     (define-key haskell-mode-map (kbd "C-c y") 'helm-hayoo))
 #+end_src
 
-*** Structured Haskell Mode
-#+begin_src emacs-lisp
-(use-package shm
-  :disabled t
-  :load-path "structured-haskell-mode/elisp/"
-  :diminish structured-haskell-mode
-  :bind ("C-c C-s" . shm/case-split)
-  :init
-    (setq shm-program-name
-          (concat user-emacs-directory
-                  "structured-haskell-mode/.cabal-sandbox/bin/structured-haskell-mode"))
-    (add-hook 'haskell-mode-hook 'structured-haskell-mode))
-#+end_src
-
 ** Helm
 #+begin_src emacs-lisp
-(use-package helm
-  :demand t
+(req-package helm-config)
+(req-package-force helm
+  :require helm-config
   :diminish helm-mode
   :init
+    (setq initial-buffer-choice #'helm-recentf)
     (setq helm-move-to-line-cycle-in-source t)
   :bind
     ("M-x"   . helm-M-x)
     ("C-c h" . helm-command-prefix)
     ("C-x b" . helm-mini)
   :config
-    (require 'helm-config)
     (helm-mode 1))
 #+end_src
 
 ** Info
 #+begin_src emacs-lisp
-(use-package info
-  :config
+(req-package info
+  :init
     (add-to-list 'Info-directory-list "/home/sven/.nix-profile/share/info/"))
 #+end_src
 
 ** LaTeX Mode
 #+begin_src emacs-lisp
-(use-package tex-mode
-  :init
-    (add-hook 'latex-mode-hook 'flycheck-mode)
-    (add-hook 'latex-mode-hook 'flyspell-mode)
-    (add-hook 'latex-mode-hook 'turn-on-reftex)
-    (add-hook 'latex-mode-hook
-      (lambda ()
-        (latex-prettify)
-        (prettify-symbols-mode 1))))
+  (req-package tex-mode
+    :init
+      (add-hook 'latex-mode-hook 'flycheck-mode)
+      (add-hook 'latex-mode-hook 'flyspell-mode)
+      (add-hook 'latex-mode-hook 'turn-on-reftex)
+      (add-hook 'latex-mode-hook
+        (lambda ()
+          (dolist (x '(("\\alpha" . ?α)
+                       ("\\beta" . ?β)
+                       ("\\gamma" . ?γ)
+                       ("\\Gamma" . ?Γ)
+                       ("\\delta" . ?δ)
+                       ("\\Delta" . ?Δ)
+                       ("\\epsilon" . ?ϵ)
+                       ("\\varepsilon" . ?ε)
+                       ("\\zeta" . ?ζ)
+                       ("\\eta" . ?η)
+                       ("\\theta" . ?θ)
+                       ("\\vartheta" . ?ϑ)
+                       ("\\Theta" . ?Θ)
+                       ("\\iota" . ?ι)
+                       ("\\kappa" . ?κ)
+                       ("\\lambda" . ?λ)
+                       ("\\Lambda" . ?Λ)
+                       ("\\mu" . ?μ)
+                       ("\\nu" . ?ν)
+                       ("\\xi" . ?ξ)
+                       ("\\Xi" . ?Ξ)
+                       ("\\pi" . ?π)
+                       ("\\varpi" . ?ϖ)
+                       ("\\Pi" . ?Π)
+                       ("\\rho" . ?ρ)
+                       ("\\varrho" . ?ϱ)
+                       ("\\sigma" . ?σ)
+                       ("\\varsigma" . ?ς)
+                       ("\\Sigma" . ?Σ)
+                       ("\\tau" . ?τ)
+                       ("\\upsilon" . ?υ)
+                       ("\\Upsilon" . ?ϒ)
+                       ("\\phi" . ?ϕ)
+                       ("\\varphi" . ?φ)
+                       ("\\Phi" . ?Φ)
+                       ("\\psi" . ?ψ)
+                       ("\\Psi" . ?Ψ)
+                       ("\\omega" . ?ω)
+                       ("\\Omega" . ?Ω)))
+            (push x prettify-symbols-alist)))
+        (prettify-symbols-mode 1)))
+#+end_src
 
-(defun latex-prettify ()
-  (dolist (x '(("\\alpha" . ?α)
-               ("\\beta" . ?β)
-               ("\\gamma" . ?γ)
-               ("\\Gamma" . ?Γ)
-               ("\\delta" . ?δ)
-               ("\\Delta" . ?Δ)
-               ("\\epsilon" . ?ϵ)
-               ("\\varepsilon" . ?ε)
-               ("\\zeta" . ?ζ)
-               ("\\eta" . ?η)
-               ("\\theta" . ?θ)
-               ("\\vartheta" . ?ϑ)
-               ("\\Theta" . ?Θ)
-               ("\\iota" . ?ι)
-               ("\\kappa" . ?κ)
-               ("\\lambda" . ?λ)
-               ("\\Lambda" . ?Λ)
-               ("\\mu" . ?μ)
-               ("\\nu" . ?ν)
-               ("\\xi" . ?ξ)
-               ("\\Xi" . ?Ξ)
-               ("\\pi" . ?π)
-               ("\\varpi" . ?ϖ)
-               ("\\Pi" . ?Π)
-               ("\\rho" . ?ρ)
-               ("\\varrho" . ?ϱ)
-               ("\\sigma" . ?σ)
-               ("\\varsigma" . ?ς)
-               ("\\Sigma" . ?Σ)
-               ("\\tau" . ?τ)
-               ("\\upsilon" . ?υ)
-               ("\\Upsilon" . ?ϒ)
-               ("\\phi" . ?ϕ)
-               ("\\varphi" . ?φ)
-               ("\\Phi" . ?Φ)
-               ("\\psi" . ?ψ)
-               ("\\Psi" . ?Ψ)
-               ("\\omega" . ?ω)
-               ("\\Omega" . ?Ω)))
-    (push x prettify-symbols-alist)))
+** Lisp Mode
+#+begin_src emacs-lisp
+(req-package lisp-mode
+  :require smartparens
+  :config
+    (add-hook 'emacs-lisp-mode-hook
+              'smartparens-strict-mode)
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil))
 #+end_src
 
 ** Magit
 #+begin_src emacs-lisp
-(use-package magit
+(req-package magit
   :bind
     ("C-x s" . magit-status))
 #+end_src
 
 ** NixOS
 #+begin_src emacs-lisp
-(use-package nix-mode)
+(req-package nix-mode)
 
-(use-package nixos
+(req-package nixos
   :init
     (setq nixos-nixpkgs-path nil))
 #+end_src
 
 ** Org Mode
-Keybindings that I cannot remember. Hopefully this list
-gets shorter over time.
-
-S-TAB          Global Cycling
-C-u C-u TAB    Startup visibility
-C-c C-n        Next Heading
-C-c C-p        Previouse Heading
-C-RET          Insert Heading
-M-S-RET        Insert TODO
-M-left         Demote Heading
-M-right        Promote Heading
-M-S-left       Demote Subtree
-M-S-right      Promote Subtree
-M-h            Mark element
-C-c ^          Sort
-
 #+begin_src emacs-lisp
-(use-package org
+(req-package org
   :bind
     ("C-c l" . org-store-link)
     ("C-c a" . org-agenda)
@@ -269,8 +239,7 @@ C-c ^          Sort
 
 ** Rainbow delimiter
 #+begin_src emacs-lisp
-(use-package rainbow-delimiters
-  :ensure t
+(req-package rainbow-delimiters
   :diminish rainbow-delimiters-mode
   :init
     (add-hook 'emacs-lisp-mode-hook
@@ -279,25 +248,24 @@ C-c ^          Sort
 
 ** Smart Parens
 #+begin_src emacs-lisp
-(use-package smartparens
-  :diminish smartparens-mode
+(req-package smartparens-config)
+(req-package smartparens
+  :require smartparens-config
   :config
-    (require 'smartparens-config)
-    (sp-use-smartparens-bindings)
-    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-    (add-hook 'emacs-lisp-mode-hook
-              'smartparens-strict-mode))
+    (sp-use-smartparens-bindings))
 #+end_src
 
 ** Speedbar
 #+begin_src emacs-lisp
-(require 'speedbar)
-(speedbar-add-supported-extension ".hs")
+(req-package speedbar
+  :config
+  (speedbar-add-supported-extension ".hs"))
 #+end_src
 
 ** Twittering Mode
 #+begin_src emacs-lisp
-(use-package twittering-mode
+(req-package twittering-mode
+  :require epa
   :init
     (advice-add 'twittering-capable-of-encryption-p
       :around (lambda (fun &rest args) t))
@@ -307,7 +275,7 @@ C-c ^          Sort
 
 ** W3M
 #+begin_src emacs-lisp
-(use-package w3m
+(req-package w3m
   :commands (w3m-browse-url)
   :init (setq browse-url-browser-function 'w3m-browse-url))
 #+end_src
@@ -319,14 +287,12 @@ C-c ^          Sort
 
 ** Whitespace Config
 #+begin_src emacs-lisp
-(use-package whitespace
-  :ensure t
+(req-package-force whitespace
   :diminish global-whitespace-mode
   :init
-    (progn
-      (setq whitespace-line-column 80)
-      (setq whitespace-style '(face empty tabs lines-tail trailing))
-      (setq-default indent-tabs-mode nil))
+    (setq whitespace-line-column 80)
+    (setq whitespace-style '(face empty tabs lines-tail trailing))
+    (setq-default indent-tabs-mode nil)
   :config
     (global-whitespace-mode 1))
 #+end_src
