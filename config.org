@@ -42,7 +42,7 @@
   :init
     (setq org-src-fontify-natively t))
 
-(set-face-attribute 'default nil :height 150)
+(set-face-attribute 'default nil :height 140)
 #+end_src
 
 * Packages
@@ -90,7 +90,7 @@
   :pin manual
   :init
     (setq flycheck-command-wrapper-function
-            (lambda (cmd args) (apply 'nix-shell-command (nixos-current-sandbox) cmd args))
+            (lambda (command) (apply 'nix-shell-command (nixos-current-sandbox) command))
           flycheck-executable-find
             (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
 #+end_src
@@ -176,8 +176,53 @@
   :init
     (add-hook 'latex-mode-hook 'flycheck-mode)
     (add-hook 'latex-mode-hook 'flyspell-mode)
-    (add-hook 'latex-mode-hook 'prettify-symbols-mode)
-    (add-hook 'latex-mode-hook 'turn-on-reftex))
+    (add-hook 'latex-mode-hook 'turn-on-reftex)
+    (add-hook 'latex-mode-hook
+      (lambda ()
+        (latex-prettify)
+        (prettify-symbols-mode 1))))
+
+(defun latex-prettify ()
+  (dolist (x '(("\\alpha" . ?α)
+               ("\\beta" . ?β)
+               ("\\gamma" . ?γ)
+               ("\\Gamma" . ?Γ)
+               ("\\delta" . ?δ)
+               ("\\Delta" . ?Δ)
+               ("\\epsilon" . ?ϵ)
+               ("\\varepsilon" . ?ε)
+               ("\\zeta" . ?ζ)
+               ("\\eta" . ?η)
+               ("\\theta" . ?θ)
+               ("\\vartheta" . ?ϑ)
+               ("\\Theta" . ?Θ)
+               ("\\iota" . ?ι)
+               ("\\kappa" . ?κ)
+               ("\\lambda" . ?λ)
+               ("\\Lambda" . ?Λ)
+               ("\\mu" . ?μ)
+               ("\\nu" . ?ν)
+               ("\\xi" . ?ξ)
+               ("\\Xi" . ?Ξ)
+               ("\\pi" . ?π)
+               ("\\varpi" . ?ϖ)
+               ("\\Pi" . ?Π)
+               ("\\rho" . ?ρ)
+               ("\\varrho" . ?ϱ)
+               ("\\sigma" . ?σ)
+               ("\\varsigma" . ?ς)
+               ("\\Sigma" . ?Σ)
+               ("\\tau" . ?τ)
+               ("\\upsilon" . ?υ)
+               ("\\Upsilon" . ?ϒ)
+               ("\\phi" . ?ϕ)
+               ("\\varphi" . ?φ)
+               ("\\Phi" . ?Φ)
+               ("\\psi" . ?ψ)
+               ("\\Psi" . ?Ψ)
+               ("\\omega" . ?ω)
+               ("\\Omega" . ?Ω)))
+    (push x prettify-symbols-alist)))
 #+end_src
 
 ** Magit
@@ -220,12 +265,6 @@ C-c ^          Sort
     ("C-c a" . org-agenda)
     ("C-c c" . org-capture)
     ("C-c b" . org-iswitchb))
-#+end_src
-
-** Prettify Symbols
-#+begin_src emacs-lisp
-(use-package prog-mode
-  :diminish prettify-symbols-mode)
 #+end_src
 
 ** Rainbow delimiter
