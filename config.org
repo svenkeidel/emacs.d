@@ -27,7 +27,7 @@
 (global-set-key (kbd "<f5>") 'recompile)
 #+end_src
 
-* Apperance
+* Appearance
 #+begin_src emacs-lisp
 (use-package spacemacs-theme
   :init
@@ -249,6 +249,7 @@
   :init
     (setq org-src-preserve-indentation t
           org-src-fontify-natively t)
+    (add-hook 'org-mode-hook 'flyspell-mode)
   :bind
     ("C-c l" . org-store-link)
     ("C-c a" . org-agenda)
