@@ -113,7 +113,7 @@ to the current working directory."
 (defun nixos-haskell-doc-filter (files)
   (-filter
    (lambda (file)
-    (not (string-match "index\\|frames\\.html\\|mini_\\|\\.js\\|\\.gif\\|\\.png\\|\\.css\\|\\.txt\\|haddock\\|src" file)))
+    (not (string-match "index\\|frames\\.html\\|mini_\\|\\.js\\|\\.gif\\|\\.png\\|\\.css\\|\\.txt\\|haddock\\|src\\|LICENSE" file)))
    files))
 
 (defun nixos-convert-module-file-name (module-file)
@@ -122,8 +122,12 @@ to the current working directory."
           module-file)))
 
 (defun nixos-haskell-search-doc (sandbox)
-  (let* ((lib (helm :sources (helm-source-haskell-doc sandbox)))
-         (doc-files (cddr (directory-files lib t)))
+  (let* ((lib1 (helm :sources (helm-source-haskell-doc sandbox)))
+         (html-dir (locate-file "html" (list lib1) nil
+                                (lambda (f) (and (file-directory-p f) 'dir-ok))))
+         (lib2 (or html-dir lib1))
+         (ignore (print lib2))
+         (doc-files (cddr (directory-files lib2 t)))
          (module-files (nixos-haskell-doc-filter doc-files))
          (modules (-map 'nixos-convert-module-file-name module-files))
          (module (helm :sources (helm-build-sync-source "haskell-library-module"
@@ -132,7 +136,9 @@ to the current working directory."
 
 (defun nixos-haskell-open-doc ()
   (interactive)
-  (browse-url (concat "file://" (nixos-haskell-search-doc (nixos-current-sandbox)))))
+  (let ((doc (nixos-haskell-search-doc (nixos-current-sandbox))))
+    (and doc
+     (browse-url (concat "file://" doc)))))
 
 (defun nixos-clear-caches ()
   (interactive)
