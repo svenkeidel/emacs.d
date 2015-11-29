@@ -96,12 +96,12 @@
 
 #+begin_src emacs-lisp
 (req-package flycheck
-  :require nixos
+  :require nix-sandbox
   :init
     (setq flycheck-command-wrapper-function
-            (lambda (command) (apply 'nix-shell-command (nixos-current-sandbox) command))
+            (lambda (command) (apply 'nix-shell-command (nix-current-sandbox) command))
           flycheck-executable-find
-            (lambda (cmd) (nixos-executable-find (nixos-current-sandbox) cmd))))
+            (lambda (cmd) (nix-executable-find (nix-current-sandbox) cmd))))
 #+end_src
 
 ** Flyspell
@@ -116,15 +116,16 @@
 ** Haskell
 #+begin_src emacs-lisp
 (req-package haskell-mode
-  :require flycheck smartparens nixos
+  :require flycheck smartparens nix-sandbox
   :init
     (setq haskell-process-type 'cabal-repl
           haskell-tags-on-save t
           haskell-process-wrapper-function
-            '(lambda (args) (apply 'nix-shell-command (nixos-current-sandbox) args)))
+            '(lambda (args) (apply 'nix-shell-command (nix-current-sandbox) args)))
     (add-hook 'haskell-mode-hook 'flycheck-mode)
     (add-hook 'haskell-mode-hook 'smartparens-strict-mode)
     (add-hook 'haskell-mode-hook 'haskell-indent-mode)
+    (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
   :config
     (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
@@ -150,12 +151,11 @@
   :diminish helm-mode
   :init
     (setq helm-move-to-line-cycle-in-source t)
+    (helm-mode 1)
   :bind
     ("M-x"   . helm-M-x)
     ("C-c h" . helm-command-prefix)
-    ("C-x b" . helm-mini)
-  :config
-    (helm-mode 1))
+    ("C-x b" . helm-mini))
 #+end_src
 
 ** Info
@@ -237,10 +237,7 @@
 ** NixOS
 #+begin_src emacs-lisp
 (req-package nix-mode)
-
-(req-package nixos
-  :init
-    (setq nixos-nixpkgs-path nil))
+(req-package nix-sandbox)
 #+end_src
 
 ** Org Mode
@@ -271,6 +268,14 @@
   :init
     (add-hook 'emacs-lisp-mode-hook
               'rainbow-delimiters-mode))
+#+end_src
+
+** Shell
+#+begin_src emacs-lisp
+(req-package shell
+  :init
+  (setq system-uses-terminfo nil)
+  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on))
 #+end_src
 
 ** Smart Parens

@@ -33,7 +33,8 @@ e.g. /home/user/.nix-defexpr/channels/unstable/nixpkgs"
         (concat "nixpkgs=" nixos-nixpkgs-path)))
    (list "--run"
          (mapconcat 'identity args " ")
-         sandbox)))
+         sandbox
+         "2>/dev/null")))
 
 
 (defun nix-shell-string (sandbox &rest args)
