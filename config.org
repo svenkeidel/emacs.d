@@ -23,6 +23,9 @@
 
 * Keybindings
 #+begin_src emacs-lisp
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+(setq mac-pass-command-to-system nil)
 (global-set-key (kbd "C-c i") 'open-emacs-init-el)
 (global-set-key (kbd "<f5>") 'recompile)
 #+end_src
@@ -33,7 +36,7 @@
   :init
     (load-theme 'spacemacs-dark t))
 
-(set-face-attribute 'default nil :height 110)
+(set-face-attribute 'default nil :height 140)
 #+end_src
 
 * Packages
@@ -70,6 +73,14 @@
   :init
     (setq calendar-date-style 'european
           calendar-date-display-form '(day "." month "." year)))
+#+end_src
+
+** Doc-View
+#+begin_src emacs-lisp
+(req-package doc-view
+  :init
+  (setq doc-view-ghostscript-program
+        (concat (getenv "HOME") "/.nix-profile/bin/gs")))
 #+end_src
 
 ** EasyPG
@@ -109,14 +120,14 @@
 #+begin_src emacs-lisp
 (req-package flyspell
   :init
-    (setq ispell-program-name "/home/sven/.nix-profile/bin/aspell")
-    (setenv "ASPELL_CONF" "dict-dir /home/sven/.nix-profile/lib/aspell"))
+    (setq ispell-program-name (format "%s/.nix-profile/bin/aspell" (getenv "HOME")))
+    (setenv "ASPELL_CONF" (format "data-dir %s/.nix-profile/lib/aspell" (getenv "HOME"))))
 #+end_src
 
 ** Haskell
 #+begin_src emacs-lisp
 (req-package haskell-mode
-  :require flycheck smartparens nix-sandbox
+  :require flycheck ;; smartparens nix-sandbox
   :init
     (setq haskell-process-type 'cabal-repl
           haskell-tags-on-save t
@@ -125,7 +136,7 @@
     (add-hook 'haskell-mode-hook 'flycheck-mode)
     (add-hook 'haskell-mode-hook 'smartparens-strict-mode)
     (add-hook 'haskell-mode-hook 'haskell-indent-mode)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
+    (add-hook 'haskell-mode-hook 'linum-mode)
   :config
     (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
@@ -172,6 +183,8 @@
       (add-hook 'latex-mode-hook 'flycheck-mode)
       (add-hook 'latex-mode-hook 'flyspell-mode)
       (add-hook 'latex-mode-hook 'turn-on-reftex)
+      (add-hook 'latex-mode-hook 'smartparens-strict-mode)
+      (add-hook 'latex-mode-hook 'auto-fill-mode)
       (add-hook 'latex-mode-hook
         (lambda ()
           (dolist (x '(("\\alpha" . ?α)
@@ -254,11 +267,21 @@
     ("C-c b" . org-iswitchb))
 #+end_src
 
+** PDF-Tools
+#+begin_src emacs-lisp
+(req-package pdf-tools
+  :config
+    (pdf-tools-install))
+#+end_src
+
 ** Projectile
 #+begin_src emacs-lisp
 (req-package projectile
   :init
-    (setq projectile-completion-system 'helm))
+    (setq projectile-enable-caching t
+          projectile-completion-system 'helm)
+  :config
+    (projectile-global-mode))
 #+end_src
 
 ** Rainbow delimiter
@@ -345,9 +368,10 @@
 (req-package-force whitespace
   :diminish global-whitespace-mode
   :init
-    (setq whitespace-line-column 80)
-    (setq whitespace-style '(face empty tabs lines-tail trailing))
-    (setq-default indent-tabs-mode nil)
+  (setq whitespace-line-column 80
+        whitespace-style '(face empty tabs lines-tail trailing)
+        fill-column 80)
+  (setq-default indent-tabs-mode nil)
   :config
     (global-whitespace-mode 1))
 #+end_src

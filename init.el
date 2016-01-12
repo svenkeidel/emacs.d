@@ -17,19 +17,14 @@
 (setq initial-scratch-message "")
 
 ;;; Set up package
+(load-file (format "%s/.nix-profile/share/emacs/site-lisp/site-start.el" (getenv "HOME")))
 (require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
 (package-initialize)
-
-(dolist
-  (package '(use-package req-package))
-  (unless (package-installed-p package)
-    (package-refresh-contents)
-    (package-install package)))
-
 (require 'use-package)
 (require 'req-package)
 
 (org-babel-load-file (concat user-emacs-directory "config.org"))
 (req-package-finish)
+
+(setq custom-file (format "%s/.emacs.d/custom.el" (getenv "HOME")))
+(load custom-file)

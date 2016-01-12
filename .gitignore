@@ -2,3 +2,5 @@ elpa/
 eshell/
 recentf
 /config.el
+/projectile-bookmarks.eld
+/projectile.cache
