@@ -120,6 +120,7 @@
 #+begin_src emacs-lisp
 (req-package flyspell
   :init
+    (setq flyspell-auto-correct-binding (kbd "C-c s"))
     (setq ispell-program-name (format "%s/.nix-profile/bin/aspell" (getenv "HOME")))
     (setenv "ASPELL_CONF" (format "data-dir %s/.nix-profile/lib/aspell" (getenv "HOME"))))
 #+end_src
@@ -270,6 +271,8 @@
 ** PDF-Tools
 #+begin_src emacs-lisp
 (req-package pdf-tools
+  :init
+    (add-hook 'pdf-view-mode-hook 'auto-revert-mode)
   :config
     (pdf-tools-install))
 #+end_src
