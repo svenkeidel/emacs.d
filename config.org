@@ -67,6 +67,15 @@
     (add-hook 'compilation-mode-hook 'toggle-truncate-lines))
 #+end_src
 
+** Company Mode
+#+begin_src emacs-lisp
+(req-package company)
+(req-package company-ghc
+  :require company
+  :init
+    (add-to-list 'company-backends 'company-ghc))
+#+end_src
+
 ** Calender
 #+begin_src emacs-lisp
 (req-package calendar
@@ -79,7 +88,7 @@
 #+begin_src emacs-lisp
 (req-package doc-view
   :init
-  (setq doc-view-ghostscript-program
+    (setq doc-view-ghostscript-program
         (concat (getenv "HOME") "/.nix-profile/bin/gs")))
 #+end_src
 
@@ -138,6 +147,7 @@
     (add-hook 'haskell-mode-hook 'smartparens-strict-mode)
     (add-hook 'haskell-mode-hook 'haskell-indent-mode)
     (add-hook 'haskell-mode-hook 'linum-mode)
+    (add-hook 'haskell-mode-hook 'company-mode)
   :config
     (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
