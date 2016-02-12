@@ -147,7 +147,6 @@
     (add-hook 'haskell-mode-hook 'smartparens-strict-mode)
     (add-hook 'haskell-mode-hook 'haskell-indent-mode)
     (add-hook 'haskell-mode-hook 'linum-mode)
-    (add-hook 'haskell-mode-hook 'company-mode)
   :config
     (define-key haskell-mode-map (kbd "M-.") 'haskell-mode-jump-to-def-or-tag)
     (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
@@ -191,6 +190,8 @@
 #+begin_src emacs-lisp
   (req-package tex-mode
     :init
+      (setq TeX-PDF-mode t)
+      (setq TeX-command-extra-options (list "-shell-escape"))
       (add-hook 'latex-mode-hook 'flycheck-mode)
       (add-hook 'latex-mode-hook 'flyspell-mode)
       (add-hook 'latex-mode-hook 'turn-on-reftex)
@@ -282,6 +283,7 @@
 #+begin_src emacs-lisp
 (req-package pdf-tools
   :init
+    (setq pdf-view-midnight-colors (cons (face-attribute 'default :foreground) (face-attribute 'default :background)))
     (add-hook 'pdf-view-mode-hook 'auto-revert-mode)
   :config
     (pdf-tools-install))
