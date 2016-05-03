@@ -17,7 +17,7 @@
 (setq initial-scratch-message "")
 
 ;;; Set up package
-(load-file (format "%s/.nix-profile/share/emacs/site-lisp/site-start.el" (getenv "HOME")))
+(load-file (format "%s/.nix-profile/share/emacs-with-packages/site-lisp/site-start.el" (getenv "HOME")))
 (require 'package)
 (package-initialize)
 (require 'use-package)

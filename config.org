@@ -36,7 +36,7 @@
   :init
     (load-theme 'spacemacs-dark t))
 
-(set-face-attribute 'default nil :height 140)
+(set-face-attribute 'default nil :height 130)
 #+end_src
 
 * Packages
@@ -69,11 +69,11 @@
 
 ** Company Mode
 #+begin_src emacs-lisp
-(req-package company)
-(req-package company-ghc
-  :require company
-  :init
-    (add-to-list 'company-backends 'company-ghc))
+;; (req-package company)
+;; (req-package company-ghc
+;;   :require company
+;;   :init
+;;     (add-to-list 'company-backends 'company-ghc))
 #+end_src
 
 ** Calender
@@ -158,10 +158,10 @@
     (define-key haskell-mode-map (kbd "C-c c") 'haskell-process-cabal)
     (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space))
 
-(req-package helm-hayoo
-  :require haskell-mode
-  :config
-    (define-key haskell-mode-map (kbd "C-c y") 'helm-hayoo))
+;; (req-package helm-hayoo
+;;   :require haskell-mode
+;;   :config
+;;     (define-key haskell-mode-map (kbd "C-c y") 'helm-hayoo))
 #+end_src
 
 ** Helm
@@ -176,7 +176,8 @@
   :bind
     ("M-x"   . helm-M-x)
     ("C-c h" . helm-command-prefix)
-    ("C-x b" . helm-mini))
+    ("C-x b" . helm-mini)
+    ("C-x C-f" . helm-find-files))
 #+end_src
 
 ** Info
@@ -191,55 +192,8 @@
   (req-package tex-mode
     :init
       (setq TeX-PDF-mode t)
-      (setq TeX-command-extra-options (list "-shell-escape"))
-      (add-hook 'latex-mode-hook 'flycheck-mode)
       (add-hook 'latex-mode-hook 'flyspell-mode)
-      (add-hook 'latex-mode-hook 'turn-on-reftex)
-      (add-hook 'latex-mode-hook 'smartparens-strict-mode)
-      (add-hook 'latex-mode-hook 'auto-fill-mode)
-      (add-hook 'latex-mode-hook
-        (lambda ()
-          (dolist (x '(("\\alpha" . ?α)
-                       ("\\beta" . ?β)
-                       ("\\gamma" . ?γ)
-                       ("\\Gamma" . ?Γ)
-                       ("\\delta" . ?δ)
-                       ("\\Delta" . ?Δ)
-                       ("\\epsilon" . ?ϵ)
-                       ("\\varepsilon" . ?ε)
-                       ("\\zeta" . ?ζ)
-                       ("\\eta" . ?η)
-                       ("\\theta" . ?θ)
-                       ("\\vartheta" . ?ϑ)
-                       ("\\Theta" . ?Θ)
-                       ("\\iota" . ?ι)
-                       ("\\kappa" . ?κ)
-                       ("\\lambda" . ?λ)
-                       ("\\Lambda" . ?Λ)
-                       ("\\mu" . ?μ)
-                       ("\\nu" . ?ν)
-                       ("\\xi" . ?ξ)
-                       ("\\Xi" . ?Ξ)
-                       ("\\pi" . ?π)
-                       ("\\varpi" . ?ϖ)
-                       ("\\Pi" . ?Π)
-                       ("\\rho" . ?ρ)
-                       ("\\varrho" . ?ϱ)
-                       ("\\sigma" . ?σ)
-                       ("\\varsigma" . ?ς)
-                       ("\\Sigma" . ?Σ)
-                       ("\\tau" . ?τ)
-                       ("\\upsilon" . ?υ)
-                       ("\\Upsilon" . ?ϒ)
-                       ("\\phi" . ?ϕ)
-                       ("\\varphi" . ?φ)
-                       ("\\Phi" . ?Φ)
-                       ("\\psi" . ?ψ)
-                       ("\\Psi" . ?Ψ)
-                       ("\\omega" . ?ω)
-                       ("\\Omega" . ?Ω)))
-            (push x prettify-symbols-alist)))
-        (prettify-symbols-mode 1)))
+      (add-hook 'latex-mode-hook 'turn-on-reftex))
 #+end_src
 
 ** Lisp Mode
@@ -381,12 +335,9 @@
 ** Whitespace Config
 #+begin_src emacs-lisp
 (req-package-force whitespace
-  :diminish global-whitespace-mode
   :init
-  (setq whitespace-line-column 80
-        whitespace-style '(face empty tabs lines-tail trailing)
-        fill-column 80)
-  (setq-default indent-tabs-mode nil)
-  :config
-    (global-whitespace-mode 1))
+    (setq whitespace-line-column 80
+          whitespace-style '(face empty tabs lines-tail trailing)
+          fill-column 80)
+    (setq-default indent-tabs-mode nil))
 #+end_src
